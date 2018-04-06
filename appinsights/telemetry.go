@@ -376,10 +376,15 @@ func NewRequestTelemetry(method, uri string, duration time.Duration, responseCod
 		nameUri = parsedUrl.String()
 	}
 
+	id, err := uuid.NewV4()
+	if err != nil {
+		panic(err)
+	}
+
 	return &RequestTelemetry{
 		Name:         fmt.Sprintf("%s %s", method, nameUri),
 		Url:          uri,
-		Id:           uuid.NewV4().String(),
+		Id:           id.String(),
 		Duration:     duration,
 		ResponseCode: responseCode,
 		Success:      success,
@@ -409,7 +414,11 @@ func (request *RequestTelemetry) TelemetryData() TelemetryData {
 	data.Source = request.Source
 
 	if request.Id == "" {
-		data.Id = uuid.NewV4().String()
+		id, err := uuid.NewV4()
+		if err != nil {
+			panic(err)
+		}
+		data.Id = id.String()
 	} else {
 		data.Id = request.Id
 	}
